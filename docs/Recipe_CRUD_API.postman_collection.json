@@ -1,0 +1,124 @@
+{
+  "info": {
+    "name": "Recipe CRUD API",
+    "_postman_id": "d1234567-89ab-cdef-0123-456789abcdef",
+    "description": "Postman collection for Recipe CRUD API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "updatedAt": "2025-07-24T13:21:00.359768"
+  },
+  "item": [
+    {
+      "name": "Create Recipe",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Pasta\",\n  \"ingredients\": [\n    \"Noodles\",\n    \"Sauce\",\n    \"Cheese\"\n  ],\n  \"instructions\": \"Boil pasta, add sauce, serve hot\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/recipes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "recipes"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Recipes",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/recipes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "recipes"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Recipe by ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/recipes/:id",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "recipes",
+            ":id"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Recipe",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Spicy Pasta\",\n  \"ingredients\": [\n    \"Noodles\",\n    \"Spicy Sauce\",\n    \"Cheese\"\n  ],\n  \"instructions\": \"Boil pasta, add spicy sauce, serve\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/recipes/:id",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "recipes",
+            ":id"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Recipe",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "http://localhost:5000/api/recipes/:id",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "recipes",
+            ":id"
+          ]
+        }
+      }
+    }
+  ]
+}

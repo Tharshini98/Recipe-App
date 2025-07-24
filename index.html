@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recipe App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-6 text-center text-blue-600">Create a Recipe</h1>
+    <form id="recipeForm" class="space-y-4">
+      <div>
+        <label class="block text-gray-700">Title</label>
+        <input type="text" id="title" placeholder="Recipe Title" required
+               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Ingredients (comma separated)</label>
+        <textarea id="ingredients" placeholder="e.g., sugar, flour, eggs" required
+                  class="w-full border border-gray-300 rounded px-3 py-2 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Instructions</label>
+        <textarea id="instructions" placeholder="Enter preparation steps..." required
+                  class="w-full border border-gray-300 rounded px-3 py-2 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition duration-300">
+        Submit Recipe
+      </button>
+    </form>
+
+    <div id="response" class="mt-6 p-4 bg-gray-100 border rounded text-sm text-gray-800"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('recipeForm');
+    const responseDiv = document.getElementById('response');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('title').value;
+      const ingredients = document.getElementById('ingredients').value.split(',').map(i => i.trim());
+      const instructions = document.getElementById('instructions').value;
+
+      try {
+        const res = await fetch('https://your-render-url.com/api/recipes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, ingredients, instructions })
+        });
+
+        const data = await res.json();
+        responseDiv.innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        responseDiv.innerText = 'Something went wrong: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
