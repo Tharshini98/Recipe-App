@@ -2,75 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Recipe App</title>
+  <title>Recipe Manager</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen p-6">
-  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center">Recipe Manager</h1>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <h1 class="text-2xl font-bold mb-4">Recipe Manager</h1>
 
-  
-    <form id="recipeForm" class="space-y-4 mb-6">
-      <input type="text" id="title" placeholder="Title" required class="w-full p-2 border rounded" />
-      <textarea id="ingredients" placeholder="Ingredients" required class="w-full p-2 border rounded"></textarea>
-      <textarea id="instructions" placeholder="Instructions" required class="w-full p-2 border rounded"></textarea>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Recipe</button>
+    <form id="recipeForm" class="space-y-4">
+      <input type="text" id="title" placeholder="Title" required class="w-full border p-2 rounded" />
+      <textarea id="ingredients" placeholder="Ingredients (comma-separated)" required class="w-full border p-2 rounded"></textarea>
+      <textarea id="instructions" placeholder="Instructions" required class="w-full border p-2 rounded"></textarea>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Recipe</button>
     </form>
 
-    
-    <div id="recipesList" class="space-y-4">
-     
-    </div>
+    <hr class="my-6" />
+
+    <div id="recipeList" class="space-y-4"></div>
   </div>
 
   <script>
-    const API = '/api/recipes';
+    const API_URL = "/api/recipes";
 
-    
-    async function loadRecipes() {
-      const res = await fetch(API);
-      const recipes = await res.json();
-      const list = document.getElementById('recipesList');
-      list.innerHTML = '';
-
-      recipes.forEach(recipe => {
-        const div = document.createElement('div');
-        div.className = "border p-4 rounded bg-gray-50";
+    async function fetchRecipes() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const container = document.getElementById("recipeList");
+      container.innerHTML = "";
+      data.forEach(recipe => {
+        const div = document.createElement("div");
+        div.className = "border p-4 rounded shadow";
         div.innerHTML = `
           <h2 class="text-xl font-semibold">${recipe.title}</h2>
           <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
           <p><strong>Instructions:</strong> ${recipe.instructions}</p>
-          <button onclick="deleteRecipe('${recipe._id}')" class="text-red-600 mt-2">Delete</button>
         `;
-        list.appendChild(div);
+        container.appendChild(div);
       });
     }
 
-    
-    document.getElementById('recipeForm').addEventListener('submit', async (e) => {
+    document.getElementById("recipeForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const title = document.getElementById('title').value;
-      const ingredients = document.getElementById('ingredients').value;
-      const instructions = document.getElementById('instructions').value;
+      const title = document.getElementById("title").value;
+      const ingredients = document.getElementById("ingredients").value;
+      const instructions = document.getElementById("instructions").value;
 
-      await fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, ingredients, instructions })
       });
 
       e.target.reset();
-      loadRecipes();
+      fetchRecipes();
     });
 
-    
-    async function deleteRecipe(id) {
-      await fetch(`${API}/${id}`, { method: 'DELETE' });
-      loadRecipes();
-    }
-
-    
-    loadRecipes();
+    fetchRecipes();
   </script>
 </body>
 </html>
