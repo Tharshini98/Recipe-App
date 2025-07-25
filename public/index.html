@@ -1,60 +1,113 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recipe Manager</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
-    <h1 class="text-2xl font-bold mb-4">Recipe Manager</h1>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen font-sans">
+  <div class="max-w-2xl mx-auto mt-10 bg-white rounded-xl shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-center mb-6 text-gray-800"> Recipe Manager</h1>
+
+  
+    <div class="mb-4">
+      <input type="text" id="search" placeholder="Search recipes..."
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    </div>
 
     <form id="recipeForm" class="space-y-4">
-      <input type="text" id="title" placeholder="Title" required class="w-full border p-2 rounded" />
-      <textarea id="ingredients" placeholder="Ingredients (comma-separated)" required class="w-full border p-2 rounded"></textarea>
-      <textarea id="instructions" placeholder="Instructions" required class="w-full border p-2 rounded"></textarea>
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Recipe</button>
+      <input type="text" id="title" placeholder="Recipe Title"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+      <textarea id="ingredients" placeholder="Ingredients (comma-separated)"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+
+      <textarea id="instructions" placeholder="Instructions"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+
+      <button type="submit"
+        class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300">
+         Add Recipe
+      </button>
     </form>
 
+    
     <hr class="my-6" />
 
-    <div id="recipeList" class="space-y-4"></div>
+  
+    <div id="recipeList" class="space-y-4">
+      
+    </div>
   </div>
 
   <script>
-    const API_URL = "/api/recipes";
+    const recipeForm = document.getElementById('recipeForm');
+    const recipeList = document.getElementById('recipeList');
+    const search = document.getElementById('search');
+
+    let allRecipes = [];
 
     async function fetchRecipes() {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      const container = document.getElementById("recipeList");
-      container.innerHTML = "";
-      data.forEach(recipe => {
-        const div = document.createElement("div");
-        div.className = "border p-4 rounded shadow";
-        div.innerHTML = `
-          <h2 class="text-xl font-semibold">${recipe.title}</h2>
-          <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
-          <p><strong>Instructions:</strong> ${recipe.instructions}</p>
-        `;
-        container.appendChild(div);
+      const res = await fetch('/api/recipes');
+      const recipes = await res.json();
+      allRecipes = recipes;
+      displayRecipes(recipes);
+    }
+
+    function displayRecipes(recipes) {
+      recipeList.innerHTML = '';
+      recipes.forEach(r => {
+        recipeList.innerHTML += `
+          <div class="p-4 bg-gray-100 rounded-lg shadow">
+            <h2 class="text-xl font-semibold text-gray-800">${r.title}</h2>
+            <p><span class="font-bold">Ingredients:</span> ${r.ingredients.join(', ')}</p>
+            <p><span class="font-bold">Instructions:</span> ${r.instructions}</p>
+            <div class="mt-2 flex gap-2">
+              <button onclick="deleteRecipe('${r._id}')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
+              <button onclick="editRecipe('${r._id}')" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</button>
+            </div>
+          </div>`;
       });
     }
 
-    document.getElementById("recipeForm").addEventListener("submit", async (e) => {
+    recipeForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const title = document.getElementById("title").value;
-      const ingredients = document.getElementById("ingredients").value;
-      const instructions = document.getElementById("instructions").value;
+      const title = document.getElementById('title').value;
+      const ingredients = document.getElementById('ingredients').value.split(',').map(i => i.trim());
+      const instructions = document.getElementById('instructions').value;
 
-      await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      await fetch('/api/recipes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, ingredients, instructions })
       });
 
-      e.target.reset();
+      recipeForm.reset();
       fetchRecipes();
+    });
+
+    async function deleteRecipe(id) {
+      await fetch(`/api/recipes/${id}`, { method: 'DELETE' });
+      fetchRecipes();
+    }
+
+    function editRecipe(id) {
+      const recipe = allRecipes.find(r => r._id === id);
+      document.getElementById('title').value = recipe.title;
+      document.getElementById('ingredients').value = recipe.ingredients.join(', ');
+      document.getElementById('instructions').value = recipe.instructions;
+      deleteRecipe(id); 
+    }
+
+    search.addEventListener('input', () => {
+      const query = search.value.toLowerCase();
+      const filtered = allRecipes.filter(r =>
+        r.title.toLowerCase().includes(query) ||
+        r.ingredients.join(',').toLowerCase().includes(query) ||
+        r.instructions.toLowerCase().includes(query)
+      );
+      displayRecipes(filtered);
     });
 
     fetchRecipes();
